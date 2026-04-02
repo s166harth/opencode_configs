@@ -1,33 +1,36 @@
-# Design Spec: MacOS `say` Command Integration for OpenCode
+# Design Spec: MacOS `say` Command & Summarization Integration
 
 ## 1. Goal
-Integrate the macOS native `say` command as the primary text-to-speech (TTS) engine for OpenCode, providing both a manual `speak` tool and automatic announcements.
+Integrate the macOS native `say` command and an automated AI summarization layer for OpenCode TTS. This ensures audio feedback is both high-quality and concise, preventing long text blocks from being read out.
 
 ## 2. Approach
-Modify the existing `plugin/voice.js` to utilize the `say` system command instead of external HTTP APIs. This minimizes dependencies and leverages the high-quality, local voices already available on macOS.
+Modify the existing `plugin/voice.js` to:
+1. Utilize the `say` system command for local speech.
+2. Include an AI-driven summarization step for messages exceeding a length threshold.
 
 ## 3. Architecture
 ### Input Handling
--   **Manual Speak Tool**: An exported `speak({ text })` tool available for agents.
--   **Event-Driven**: Listener for `session.idle` to trigger completion announcements.
+-   **Manual Speak Tool**: An exported `speak({ text })` tool.
+-   **Event-Driven**: Listener for `session.idle` for announcements.
+
+### Summarization Agent (Plugin-side)
+-   **Threshold**: Messages > 250 characters.
+-   **Prompt**: "Summarize this technical AI response into 1-2 natural sentences for voice output. Keep it extremely brief."
+-   **Engine**: External AI endpoint (configured via environment/default config).
 
 ### Processing Logic
--   **Sanitization**: Strip Markdown (e.g., `*`, `_`, `#`, backticks) and extra whitespace from input text.
--   **Lock Check**: Verify if speech is allowed (already exists in current `voice.js`).
--   **Execution**: Call `say` via the OpenCode shell client (`$`).
+-   **Sanitization**: Strip Markdown symbols and newlines before processing.
+-   **Summarize-First**: Call AI summarizer if threshold is met.
+-   **Speech Delivery**: Call `say -v [Voice] "[Text]"`.
 
-### Configuration
-Update `loadConfig()` to include:
--   `voice`: Default to "Alex" or current system preference.
--   `announceOnIdle`: Enable by default.
--   `idleMessage`: Update to "Task completed."
-
-## 4. Components
--   **`plugin/voice.js`**: Core logic for the plugin and tool definition.
--   **Configuration Entry**: Ensure the plugin is registered in `~/.config/opencode/opencode.json`.
+## 4. Configuration
+Add to `loadConfig()`:
+-   `voice`: Default "Alex".
+-   `summaryThreshold`: Default 250 characters.
+-   `aiEndpoint`: URL for the LLM gateway.
+-   `aiModel`: Model name for summarization.
 
 ## 5. Success Criteria
--   Calling `speak({ text: "Hello" })` executes `say "Hello"`.
--   When a session finishes, the system says "Task completed."
--   No external API keys are required for basic speech.
--   Markdown formatting is removed before speech to prevent reading aloud characters like "asterisk".
+-   Short messages are read out completely.
+-   Long messages (e.g., code explanations) are summarized into 1-2 voice-friendly sentences.
+-   Audio is clear, local, and free (via `say`).
