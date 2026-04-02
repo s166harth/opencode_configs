@@ -1,0 +1,45 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": [
+    "opentmux",
+    "opencode-google-antigravity-auth",
+    "oh-my-openagent@latest",
+    "opencode-agent-tmux",
+    "./plugin/voice"
+  ],
+  "mcp": {
+    "mermaid": {
+      "type": "local",
+      "command": ["node", "/Users/siddharth/.nvm/versions/node/v22.14.0/lib/node_modules/@narasimhaponnada/mermaid-mcp-server/dist/index.js"],
+      "enabled": false
+    },
+    "playwright": {
+      "type": "local",
+      "command": [
+        "npx",
+        "@playwright/mcp@latest"
+      ],
+      "enabled": true
+    },
+    "curl": {
+      "type": "local",
+      "command": ["npx", "-y", "@247arjun/mcp-curl"],
+      "enabled": true
+    },
+    "arxiv": {
+      "type": "local",
+      "command": ["npx", "-y", "papers-mcp"],
+      "enabled": true
+    },
+    "scholar": {
+      "type": "local",
+      "command": ["uvx", "scholar-mcp"],
+      "enabled": true
+    },
+    "memory": {
+      "type": "local",
+      "command": ["npx", "-y", "@modelcontextprotocol/server-memory"],
+      "enabled": true
+    }
+  }
+}

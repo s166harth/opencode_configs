@@ -1,0 +1,10 @@
+node_modules
+package.json
+bun.lock
+logs/
+assets/
+plugin/
+*.log
+
+# Superpowers is a separate git repo, don't include it here
+superpowers/
