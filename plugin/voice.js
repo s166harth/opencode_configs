@@ -1,0 +1,1 @@
+/Users/siddharth/personal/opencode-voice-plugin/dist/index.js
